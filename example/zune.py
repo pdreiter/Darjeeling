@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+import logging
+import datetime
+
 import bugzoo
 import bugzoo.localization
 import darjeeling
 import darjeeling.repair
-import datetime
 
 
 def main():
@@ -16,21 +18,17 @@ def main():
     problem = darjeeling.problem.Problem(bz, bug,
                                          in_files=files)
 
-    print("\n[LINES]\n")
-    for line in problem.lines:
-        fn = line.filename
-        src = problem.sources[fn]
-        char_range = src.line_to_char_range(line)
-        content = src[char_range]
-        print("{} / {}: '{}'".format(line, char_range, content))
-    print("[\LINES]\n")
-
     print("\n[SNIPPETS]")
     for (i, snippet) in enumerate(problem.snippets):
         print("{}: {}".format(i, snippet))
     print("[\SNIPPETS]\n")
 
     time_limit = datetime.timedelta(minutes=15)
+
+    # let's setup logging
+    log_to_stdout = logging.StreamHandler()
+    log_to_stdout.setLevel(logging.DEBUG)
+    logging.getLogger('darjeeling').addHandler(log_to_stdout)
 
     patches, report = darjeeling.repair.repair(bz,
                                                problem,
