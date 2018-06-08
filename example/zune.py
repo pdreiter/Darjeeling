@@ -2,6 +2,7 @@
 import logging
 import datetime
 
+import rooibos
 import bugzoo
 import bugzoo.localization
 import darjeeling
@@ -15,26 +16,29 @@ def main():
 
     files = ['zune.c']
     # files = ['atris_comb.c']
-    problem = darjeeling.problem.Problem(bz, bug,
-                                         in_files=files)
 
-    print("\n[SNIPPETS]")
-    for (i, snippet) in enumerate(problem.snippets):
-        print("{}: {}".format(i, snippet))
-    print("[\SNIPPETS]\n")
+    with rooibos.ephemeral_server() as client_rooibos:
+        problem = darjeeling.problem.Problem(bz, bug,
+                                             in_files=files,
+                                             client_rooibos=client_rooibos)
 
-    time_limit = datetime.timedelta(minutes=15)
+        print("\n[SNIPPETS]")
+        for (i, snippet) in enumerate(problem.snippets):
+            print("{}: {}".format(i, snippet))
+        print("[\SNIPPETS]\n")
 
-    # let's setup logging
-    log_to_stdout = logging.StreamHandler()
-    log_to_stdout.setLevel(logging.DEBUG)
-    logging.getLogger('darjeeling').addHandler(log_to_stdout)
+        time_limit = datetime.timedelta(minutes=15)
 
-    patches, report = darjeeling.repair.repair(bz,
-                                               problem,
-                                               threads=10,
-                                               seed=0,
-                                               time_limit=time_limit)
+        # let's setup logging
+        log_to_stdout = logging.StreamHandler()
+        log_to_stdout.setLevel(logging.DEBUG)
+        logging.getLogger('darjeeling').addHandler(log_to_stdout)
+
+        patches, report = darjeeling.repair.repair(bz,
+                                                   problem,
+                                                   threads=10,
+                                                   seed=0,
+                                                   time_limit=time_limit)
 
 
 if __name__ == '__main__':
