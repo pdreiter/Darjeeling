@@ -68,6 +68,11 @@ class GreaterThanToLessOrEqualTo(RooibosTransformation):
     rewrite = "<="
 
 
+class LEToGT(RooibosTransformation):
+    match = "<="
+    rewrite = ">"
+
+
 @attr.s(frozen=True)
 class LocationRangeTransformation(Transformation):
     location = attr.ib(type=FileLocationRange,
